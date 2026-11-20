@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: homecare
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d homecare"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+
+    env:
+      # Chỉ dùng trong CI, không phải bí mật thật
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/homecare
+      MIGRATOR_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/homecare
+      REDIS_URL: redis://localhost:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Cài thư viện
+        run: pnpm install --frozen-lockfile
+
+      - name: Kiểm tra định dạng (Prettier)
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Kiểm tra PostGIS trong CSDL test
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis; SELECT postgis_full_version();"
+
+      - name: Migration test
+        run: pnpm db:migrate
+
+      - name: E2E test (API)
+        run: pnpm test:e2e

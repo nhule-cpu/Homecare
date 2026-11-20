@@ -1,0 +1,16 @@
+{
+  "name": "@homecare/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Component dùng chung",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "Zone Dispatch Tool - Axel Homecare",
+    "subtitle": "Home visit dispatch system",
+    "status": "Project skeleton is ready. Features will be added phase by phase."
+  },
+  "locale": {
+    "switch": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  }
+}

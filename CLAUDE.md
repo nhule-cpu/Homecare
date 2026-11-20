@@ -20,14 +20,21 @@ Tài liệu gốc: `docs/plan.md`. Khi có mâu thuẫn, plan.md là chuẩn. N�
 
 ## Lệnh thường dùng
 ```bash
+corepack enable                                    # dùng đúng pnpm theo packageManager
 pnpm i
+cp .env.example .env                               # rồi điền khóa (xem chú thích trong file)
 docker compose -f infra/docker-compose.yml up -d   # postgres, redis, minio
 pnpm db:migrate && pnpm db:seed
 pnpm dev            # web + api
 pnpm test           # unit (vitest/jest)
-pnpm test:e2e       # playwright
+pnpm test:e2e       # e2e (API: jest + supertest; web: playwright, thêm ở P04)
 pnpm lint && pnpm typecheck
+pnpm format         # prettier (CI chạy pnpm format:check)
+pnpm build
 ```
+- Web: http://localhost:3000 (tự chuyển sang /vi) · API: http://localhost:4000/health · Swagger: http://localhost:4000/docs
+- Package trong `packages/*` build ra `dist/` (CommonJS); turbo tự build package phụ thuộc trước khi chạy typecheck/test/dev.
+
 Cập nhật mục này nếu lệnh thay đổi.
 
 ## QUY TẮC BẮT BUỘC (không được vi phạm)
@@ -103,7 +110,10 @@ Cập nhật mục này nếu lệnh thay đổi.
 - Ngày hiển thị dạng `dd/mm/yyyy`.
 
 ## Cách làm việc
-- Mỗi phiên chỉ làm **một phần** (theo `docs/prompts.md`). Làm trên nhánh riêng `feat/<ten-ngan>` và mở PR khi xong.
+- Mỗi phiên chỉ làm **một phần** (theo `docs/prompts.md`).
+- Mỗi **giai đoạn** (mục 10 của plan) dùng một nhánh riêng tách từ `main`: `feat/giai-doan-1-nen-tang` (P01–P04), `feat/giai-doan-2-nghiep-vu` (P05–P09), `feat/giai-doan-3-nvyt-dau-ra` (P10–P13), `feat/giai-doan-4-go-live` (P14–P15).
+  - Mỗi phiên là một hoặc vài commit trên nhánh giai đoạn, commit message bắt đầu bằng mã phiên (vd `P01: ...`).
+  - Hết giai đoạn thì mở **một PR** vào `main`, mô tả PR liệt kê kết quả từng phiên. Giai đoạn sau tách nhánh từ `main` sau khi PR trước đã merge.
 - Trước khi code: đọc `docs/plan.md` mục liên quan, rồi nêu ngắn gọn kế hoạch trong PR.
 - Logic nghiệp vụ đặt trong `packages/domain`, phải có unit test, các ca biên ghi rõ trong tên test (tiếng Việt cũng được).
 - Mỗi migration có rollback. Không sửa migration đã merge, mà tạo migration mới.

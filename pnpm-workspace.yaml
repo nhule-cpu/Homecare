@@ -1,0 +1,17 @@
+packages:
+  - apps/*
+  - packages/*
+  - workers
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@tailwindcss/oxide'
+  - esbuild
+  - msgpackr-extract
+  - sharp
+  - unrs-resolver
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@scarf/scarf'
+  - '@swc/core'

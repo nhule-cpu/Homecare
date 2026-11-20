@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "Công cụ điều phối zone - Axel Homecare",
+    "subtitle": "Hệ thống điều phối khám tại nhà",
+    "status": "Khung dự án đã sẵn sàng. Các chức năng sẽ được bổ sung theo từng giai đoạn."
+  },
+  "locale": {
+    "switch": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  }
+}
